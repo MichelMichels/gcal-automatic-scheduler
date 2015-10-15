@@ -26,6 +26,27 @@ namespace CalendarScheduler
             cl.ReadCoursesFromFile("C:\\Users\\Michel\\Source\\Repos\\gcal-automatic-scheduler\\CalendarScheduler\\CalendarScheduler\\uurrooster.csv");
             cl.printList();
 
+            Event newEvent = new Event()
+            {
+                Summary = "Test event",
+                Start = new EventDateTime()
+                {
+                    DateTime = new DateTime(2015, 10, 15, 20, 0, 0),
+                    TimeZone = "Europe/Brussels",
+                },
+                End = new EventDateTime()
+                {
+                    DateTime = new DateTime(2015, 10, 15, 21, 0, 0),
+                    TimeZone = "Europe/Brussels",
+                },
+
+            };
+
+            String calendarId = "primary";
+            EventsResource.InsertRequest request = service.Events.Insert(newEvent, calendarId);
+            Event createdEvent = request.Execute();
+            //Console.WriteLine("Event created: {0}", createdEvent.HtmlLink);
+
             /*
             // Define parameters of request.
             EventsResource.ListRequest request = service.Events.List("primary");

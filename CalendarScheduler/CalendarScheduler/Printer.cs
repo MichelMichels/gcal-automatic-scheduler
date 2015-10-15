@@ -33,7 +33,17 @@ namespace CalendarScheduler
            }
         }
 
+        public void AllCalendarIDs()
+        {
+            // Print all calendars in console
+            CalendarListResource.ListRequest request = serv.CalendarList.List();
+            CalendarList calendarList = request.Execute();
 
+            foreach (var item in calendarList.Items)
+            {
+                Console.WriteLine(item.Id);
+            }
+        }
 
         private CalendarService serv;
     }

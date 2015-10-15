@@ -18,7 +18,7 @@ namespace CalendarScheduler
 {
     class APIConnection
     {
-        static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
+        static string[] Scopes = { "https://www.googleapis.com/auth/calendar" };
         static string ApplicationName = "Google Calendar School Scheduler";
         private UserCredential credential;
 
@@ -32,7 +32,7 @@ namespace CalendarScheduler
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
                     Scopes,
-                    "user",
+                    "michel.michels.jr@gmail.com",
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
                 Console.WriteLine("Credential file saved to: " + credPath);
