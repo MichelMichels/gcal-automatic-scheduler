@@ -20,20 +20,12 @@ namespace CalendarScheduler
             // Get connection
             APIConnection conn = new APIConnection();
             CalendarService service = conn.service;
-            
 
-            // Print all calendars in console
-            CalendarListResource.ListRequest request = service.CalendarList.List();
-            CalendarList calendarList = request.Execute();
+            // Make printer object
+            Printer printer = new Printer(service);
 
-            foreach (var item in calendarList.Items)
-            {
-                Console.WriteLine(item.Id);
-                Console.WriteLine(item.ETag);
-                Console.WriteLine(item.Summary);
-                Console.WriteLine();
-            }
-            
+            // Print all calendar names
+            printer.AllCalendarNames();
 
 
             /*
