@@ -11,40 +11,32 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CalendarQuickstart
+namespace CalendarScheduler
 {
     class Program
     {
-        static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
-        static string ApplicationName = "Google Calendar API .NET Quickstart";
-
         static void Main(string[] args)
         {
-            UserCredential credential;
+            // Get connection
+            APIConnection conn = new APIConnection();
+            CalendarService service = conn.service;
+            
 
-            using (var stream =
-                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            // Print all calendars in console
+            CalendarListResource.ListRequest request = service.CalendarList.List();
+            CalendarList calendarList = request.Execute();
+
+            foreach (var item in calendarList.Items)
             {
-                string credPath = System.Environment.GetFolderPath(
-                    System.Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(credPath, ".credentials/calendar-dotnet-quickstart");
-
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
+                Console.WriteLine(item.Id);
+                Console.WriteLine(item.ETag);
+                Console.WriteLine(item.Summary);
+                Console.WriteLine();
             }
+            
 
-            // Create Google Calendar API service.
-            var service = new CalendarService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
 
+            /*
             // Define parameters of request.
             EventsResource.ListRequest request = service.Events.List("primary");
             request.TimeMin = DateTime.Now;
@@ -52,10 +44,10 @@ namespace CalendarQuickstart
             request.SingleEvents = true;
             request.MaxResults = 10;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+            */
 
 
 
-            
             /*
             // List events.
             Events events = request.Execute();
@@ -78,6 +70,9 @@ namespace CalendarQuickstart
             }
             Console.Read();
             */
+
+            // keep console window open
+            Console.Read();
         }
     }
 }
