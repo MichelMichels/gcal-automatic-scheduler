@@ -21,12 +21,10 @@ namespace CalendarScheduler
             APIConnection conn = new APIConnection();
             CalendarService service = conn.service;
 
-            // Make printer object
-            Printer printer = new Printer(service);
-
-            // Print all calendar names
-            printer.AllCalendarNames();
-
+            // New CourseList object
+            CourseList cl = new CourseList();
+            cl.ReadCoursesFromFile("C:\\Users\\Michel\\Source\\Repos\\gcal-automatic-scheduler\\CalendarScheduler\\CalendarScheduler\\uurrooster.csv");
+            cl.printList();
 
             /*
             // Define parameters of request.
