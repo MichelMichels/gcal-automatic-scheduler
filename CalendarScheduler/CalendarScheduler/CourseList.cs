@@ -68,10 +68,16 @@ namespace CalendarScheduler
         // upload courses to google Calendar [WIP]
         public void PushCoursesToGoogleCalendar(CalendarService service, int semester)
         {
+            //
+            // METHOD VARIABLES
+            //
             int i = 0;
             bool abort = false;
+            
+            //
+            // A) iterate over every course
+            //
 
-            // iterate over every course
             while(i < cl.Count & !abort)
             {
                 // get course object from list
