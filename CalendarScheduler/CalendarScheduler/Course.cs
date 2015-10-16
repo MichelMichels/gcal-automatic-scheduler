@@ -1,7 +1,14 @@
-﻿using System;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CalendarScheduler
@@ -24,6 +31,27 @@ namespace CalendarScheduler
             this.EndTime = EndTime;
             this.Location = Location;
 
+        }
+
+        public Event ToEvent(DateTime date)
+        {
+            Event newEvent = new Event()
+            {
+                Summary = Name,
+                Start = new EventDateTime()
+                {
+                    DateTime = new DateTime(date.Year, date.Month, date.Day, StartTime.Hours, StartTime.Minutes, 0),
+                    TimeZone = "Europe/Brussels",
+                },
+                End = new EventDateTime()
+                {
+                    DateTime = new DateTime(date.Year, date.Month, date.Day, EndTime.Hours, EndTime.Minutes, 0),
+                    TimeZone = "Europe/Brussels",
+                },
+
+            };
+
+            return newEvent;
         }
 
         public override string ToString()

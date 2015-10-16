@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Globalization;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Calendar.v3;
 
 namespace CalendarScheduler
 {
     class CourseList
     {
+        // constructor [FINISHED]
         public CourseList()
         {
             cl = new List<Course>();
@@ -19,11 +23,12 @@ namespace CalendarScheduler
             cl.Add(c);
         }
 
-        public Course getCourse(int index)
+        public Course GetCourse(int index)
         {
             return cl[index];
         }
 
+        // read csv file [FINISHED]
         public void ReadCoursesFromFile(string fileName)
         {
             int counter = 0;
@@ -51,7 +56,8 @@ namespace CalendarScheduler
             file.Close();
         }
 
-        public void printList()
+        // print courses [FINISHED]
+        public void PrintList()
         {
             foreach (var course in cl)
             {
@@ -59,6 +65,68 @@ namespace CalendarScheduler
             }
         }
 
+        // upload courses to google Calendar [WIP]
+        public void PushCoursesToGoogleCalendar(CalendarService service)
+        {
+            int i = 0;
+            // iterate over every course
+            while(i < cl.Count)
+            {
+                // get course object from list
+                Course currCourse = cl[i];
+
+                // declare startdate
+                DateTime startDate = new DateTime();
+
+                // set start dates for lessons on each day
+                if (currCourse.Day.Equals("ma")) startDate = new DateTime(2015, 9, 21);
+                if (currCourse.Day.Equals("di")) startDate = new DateTime(2015, 9, 22);
+                if (currCourse.Day.Equals("wo")) startDate = new DateTime(2015, 9, 23);
+                if (currCourse.Day.Equals("do")) startDate = new DateTime(2015, 9, 24);
+                if (currCourse.Day.Equals("vr")) startDate = new DateTime(2015, 9, 25);
+
+                // end date is first saturday of christmas holidays
+                DateTime endDate = new DateTime(2015, 12, 19);
+
+                // set current date equal to start date
+                DateTime currDate = startDate;
+
+                // week of the year
+                DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+                System.Globalization.Calendar cal = dfi.Calendar;
+
+                // courses counter
+                int counter = 0;
+
+                // conditional statement 
+                while (currDate < endDate)
+                {
+                    if (cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 45 || currDate == new DateTime(2015, 11, 11))
+                    {
+                        // skip autumn holidays and wapenstilstand
+                        currDate = currDate.AddDays(7);
+                        continue;
+                    }
+
+                    // create event with currDate
+                    Event newEvent = currCourse.ToEvent(currDate);
+                    
+                    // push to google calendar
+                    string calendarId = "primary";
+                    EventsResource.InsertRequest request = service.Events.Insert(newEvent, calendarId);
+                    Event createdEvent = request.Execute();
+                    Console.WriteLine("Event created: {0}", createdEvent.HtmlLink);
+
+                    currDate = currDate.AddDays(7);
+                    counter++;
+
+                }
+
+                i++;
+            }
+        }
+
+        // string array to course objects [FINISHED]
         private void ArrayToCourse(string[] arr, string day)
         {
             if (arr[1] != "")
