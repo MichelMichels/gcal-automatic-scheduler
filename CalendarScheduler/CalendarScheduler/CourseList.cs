@@ -81,25 +81,26 @@ namespace CalendarScheduler
                 DateTime startDate = new DateTime();
                 DateTime endDate = new DateTime();
 
+                // day array
+                string[] dayOfTheWeek = { "ma", "di", "wo", "do", "vr" };
+
                 if (semester == 0)
                 {
-                    // set start dates for lessons on each day
-                    if (currCourse.Day.Equals("ma")) startDate = new DateTime(2015, 9, 21);
-                    if (currCourse.Day.Equals("di")) startDate = new DateTime(2015, 9, 22);
-                    if (currCourse.Day.Equals("wo")) startDate = new DateTime(2015, 9, 23);
-                    if (currCourse.Day.Equals("do")) startDate = new DateTime(2015, 9, 24);
-                    if (currCourse.Day.Equals("vr")) startDate = new DateTime(2015, 9, 25);
+                    // set start dates for lessons on each day (for loop for shorter code)
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (currCourse.Day.Equals(dayOfTheWeek[i])) startDate = new DateTime(2015, 9, 21 + i);
+                    }
 
                     // end date is first saturday of christmas holidays
                     endDate = new DateTime(2015, 12, 19);
                 } else if (semester == 1)
                 {
                     // set start dates for lessons on each day
-                    if (currCourse.Day.Equals("ma")) startDate = new DateTime(2016, 1, 15);
-                    if (currCourse.Day.Equals("di")) startDate = new DateTime(2016, 1, 16);
-                    if (currCourse.Day.Equals("wo")) startDate = new DateTime(2016, 1, 17);
-                    if (currCourse.Day.Equals("do")) startDate = new DateTime(2016, 1, 18);
-                    if (currCourse.Day.Equals("vr")) startDate = new DateTime(2016, 1, 19);
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (currCourse.Day.Equals(dayOfTheWeek[i])) startDate = new DateTime(2016, 1, 15 + i);
+                    }
 
                     // end date is first saturday of summer holiday
                     endDate = new DateTime(2016, 5, 28);
