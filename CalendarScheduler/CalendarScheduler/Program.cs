@@ -28,7 +28,8 @@ namespace CalendarScheduler
             cl.ReadCoursesFromFile("C:\\Users\\Michel\\Source\\Repos\\gcal-automatic-scheduler\\CalendarScheduler\\CalendarScheduler\\uurrooster.csv");
 
             // push all courses on the list to the calendar
-            cl.PushCoursesToGoogleCalendar(service);
+            int semester = 0;
+            cl.PushCoursesToGoogleCalendar(service, semester);
 
             // keep console window open
             Console.WriteLine("Done");

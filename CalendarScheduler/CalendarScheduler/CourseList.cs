@@ -66,28 +66,49 @@ namespace CalendarScheduler
         }
 
         // upload courses to google Calendar [WIP]
-        public void PushCoursesToGoogleCalendar(CalendarService service)
+        public void PushCoursesToGoogleCalendar(CalendarService service, int semester)
         {
             int i = 0;
+            bool abort = false;
+
             // iterate over every course
-            while(i < cl.Count)
+            while(i < cl.Count & !abort)
             {
                 // get course object from list
                 Course currCourse = cl[i];
 
-                // declare startdate
+                // declare startdate and enddate
                 DateTime startDate = new DateTime();
+                DateTime endDate = new DateTime();
 
-                // set start dates for lessons on each day
-                if (currCourse.Day.Equals("ma")) startDate = new DateTime(2015, 9, 21);
-                if (currCourse.Day.Equals("di")) startDate = new DateTime(2015, 9, 22);
-                if (currCourse.Day.Equals("wo")) startDate = new DateTime(2015, 9, 23);
-                if (currCourse.Day.Equals("do")) startDate = new DateTime(2015, 9, 24);
-                if (currCourse.Day.Equals("vr")) startDate = new DateTime(2015, 9, 25);
+                if (semester == 0)
+                {
+                    // set start dates for lessons on each day
+                    if (currCourse.Day.Equals("ma")) startDate = new DateTime(2015, 9, 21);
+                    if (currCourse.Day.Equals("di")) startDate = new DateTime(2015, 9, 22);
+                    if (currCourse.Day.Equals("wo")) startDate = new DateTime(2015, 9, 23);
+                    if (currCourse.Day.Equals("do")) startDate = new DateTime(2015, 9, 24);
+                    if (currCourse.Day.Equals("vr")) startDate = new DateTime(2015, 9, 25);
 
-                // end date is first saturday of christmas holidays
-                DateTime endDate = new DateTime(2015, 12, 19);
+                    // end date is first saturday of christmas holidays
+                    endDate = new DateTime(2015, 12, 19);
+                } else if (semester == 1)
+                {
+                    // set start dates for lessons on each day
+                    if (currCourse.Day.Equals("ma")) startDate = new DateTime(2016, 1, 15);
+                    if (currCourse.Day.Equals("di")) startDate = new DateTime(2016, 1, 16);
+                    if (currCourse.Day.Equals("wo")) startDate = new DateTime(2016, 1, 17);
+                    if (currCourse.Day.Equals("do")) startDate = new DateTime(2016, 1, 18);
+                    if (currCourse.Day.Equals("vr")) startDate = new DateTime(2016, 1, 19);
 
+                    // end date is first saturday of summer holiday
+                    endDate = new DateTime(2016, 5, 28);
+                } else
+                {
+                    Console.WriteLine("Not a valid selection. Abort.");
+                    abort = true;
+                }
+                
                 // set current date equal to start date
                 DateTime currDate = startDate;
 
@@ -101,11 +122,33 @@ namespace CalendarScheduler
                 // conditional statement 
                 while (currDate < endDate)
                 {
-                    if (cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 45 || currDate == new DateTime(2015, 11, 11))
+                    if (semester == 0)
                     {
-                        // skip autumn holidays and wapenstilstand
-                        currDate = currDate.AddDays(7);
-                        continue;
+                        if (cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 45 || currDate == new DateTime(2015, 11, 11))
+                        {
+                            // skip autumn holidays and wapenstilstand
+                            currDate = currDate.AddDays(7);
+                            continue;
+                        }
+                    } else if (semester == 1)
+                    {
+                        if (// winter holiday
+                            cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 5 
+                            // spring break
+                            || cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 6
+                            // easter holidays
+                            || cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 13
+                            || cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 14
+                            // OLH Hemelvaart
+                            || currDate == new DateTime(2016, 5, 5)
+                            // pinkstermaandag
+                            || currDate == new DateTime(2016, 5, 16)
+                            )
+                        {
+                            // skip holidays and free days
+                            currDate = currDate.AddDays(7);
+                            continue;
+                        }
                     }
 
                     // create event with currDate
@@ -171,6 +214,11 @@ namespace CalendarScheduler
 
                 cl.Add(c);
             }
+        }
+
+        public void RemoveEventsFromCalendar(CalendarService service)
+        {
+            
         }
 
         private List<Course> cl;
