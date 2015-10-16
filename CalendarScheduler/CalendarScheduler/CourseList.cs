@@ -84,6 +84,7 @@ namespace CalendarScheduler
                 // day array
                 string[] dayOfTheWeek = { "ma", "di", "wo", "do", "vr" };
 
+                // check semester
                 if (semester == 0)
                 {
                     // set start dates for lessons on each day (for loop for shorter code)
@@ -120,9 +121,13 @@ namespace CalendarScheduler
                 // courses counter
                 int counter = 0;
 
-                // conditional statement 
-                while (currDate < endDate)
+                // check if current date doesn't go over the end date + abort boolean 
+                while (currDate < endDate && !abort)
                 {
+                    //
+                    // 1) Check holidays and skip them by adding 7 days (for each semester)
+                    //
+
                     if (semester == 0)
                     {
                         if (cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 45 || currDate == new DateTime(2015, 11, 11))
@@ -150,16 +155,26 @@ namespace CalendarScheduler
                             currDate = currDate.AddDays(7);
                             continue;
                         }
+                    } else
+                    {
+                        Console.WriteLine("Bad semester number. Abort.");
+                        abort = true;
                     }
 
-                    // create event with currDate
+                    //
+                    // 2) Create event with currDate and 'ToEvent' method from Course.cs
+                    //
+
                     Event newEvent = currCourse.ToEvent(currDate);
                     
-                    // push to google calendar
+                    //
+                    // 3) Push to google calendar
+                    //
+
                     string calendarId = "primary";
                     EventsResource.InsertRequest request = service.Events.Insert(newEvent, calendarId);
                     Event createdEvent = request.Execute();
-                    Console.WriteLine("Event created: {0}", createdEvent.HtmlLink);
+                    Console.WriteLine("Event created: {0} ({1})", createdEvent.Summary, createdEvent.Start.Date);
 
                     currDate = currDate.AddDays(7);
                     counter++;
