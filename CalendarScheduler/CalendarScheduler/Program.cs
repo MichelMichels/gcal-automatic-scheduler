@@ -22,14 +22,22 @@ namespace CalendarScheduler
             CalendarService service = conn.service;
 
             // New CourseList object
-            CourseList cl = new CourseList();
+            CourseList evenWeekCourses = new CourseList();
+            CourseList oddWeekCourses = new CourseList();
 
             // read courses to list
-            cl.ReadCoursesFromFile("C:\\Users\\Michel\\Source\\Repos\\gcal-automatic-scheduler\\CalendarScheduler\\CalendarScheduler\\uurrooster.csv");
+            oddWeekCourses.ReadCoursesFromFile("C:\\Users\\Michel\\Source\\Repos\\gcal-automatic-scheduler\\CalendarScheduler\\CalendarScheduler\\uurrooster.csv", true);
+            evenWeekCourses.ReadCoursesFromFile("C:\\Users\\Michel\\Source\\Repos\\gcal-automatic-scheduler\\CalendarScheduler\\CalendarScheduler\\uurrooster.csv", false);
 
             // push all courses on the list to the calendar
-            int semester = 0;
-            cl.PushCoursesToGoogleCalendar(service, semester);
+            //int semester = 0;
+            //oddWeekCourses.PushCoursesToGoogleCalendar(service, semester, true);
+            //evenWeekCourses.PushCoursesToGoogleCalendar(service, semester, false);
+
+            //semester = 1;
+            //oddWeekCourses.Push
+            //
+            //
 
             // keep console window open
             Console.WriteLine("Done");

@@ -29,7 +29,7 @@ namespace CalendarScheduler
         }
 
         // read csv file [FINISHED]
-        public void ReadCoursesFromFile(string fileName)
+        public void ReadCoursesFromFile(string fileName, bool oddWeek)
         {
             int counter = 0;
             string line;
@@ -40,16 +40,17 @@ namespace CalendarScheduler
             // while loop checks if there are more lines (line is not empty)
             while((line = file.ReadLine()) != null)
             {
+                // all strings between ;
                 string[] arr = line.Split(';');
+
+                // if day isn't empty --> set day var
                 if (!arr[0].Equals(""))
                 {
                     day = arr[0];
-
-                    // debug
-                    //Console.WriteLine(day);
                 }
 
-                ArrayToCourse(arr, day); 
+                // convert array to course
+                ArrayToCourse(arr, day, oddWeek); 
                 counter++;
             }
 
@@ -66,7 +67,7 @@ namespace CalendarScheduler
         }
 
         // upload courses to google Calendar [WIP]
-        public void PushCoursesToGoogleCalendar(CalendarService service, int semester)
+        public void PushCoursesToGoogleCalendar(CalendarService service, int semester, bool oddWeek)
         {
             //
             // METHOD VARIABLES
@@ -75,7 +76,7 @@ namespace CalendarScheduler
             bool abort = false;
             
             //
-            // A) iterate over every course
+            // Iterate over every course
             //
 
             while(i < cl.Count & !abort)
@@ -97,6 +98,7 @@ namespace CalendarScheduler
                     for (int j = 0; j < 5; j++)
                     {
                         if (currCourse.Day.Equals(dayOfTheWeek[i])) startDate = new DateTime(2015, 9, 21 + i);
+                        if (!oddWeek) startDate = startDate.AddDays(7);
                     }
 
                     // end date is first saturday of christmas holidays
@@ -107,6 +109,7 @@ namespace CalendarScheduler
                     for (int j = 0; j < 5; j++)
                     {
                         if (currCourse.Day.Equals(dayOfTheWeek[i])) startDate = new DateTime(2016, 1, 15 + i);
+                        if (!oddWeek) startDate = startDate.AddDays(7);
                     }
 
                     // end date is first saturday of summer holiday
@@ -131,7 +134,7 @@ namespace CalendarScheduler
                 while (currDate < endDate && !abort)
                 {
                     //
-                    // 1) Check holidays and skip them by adding 7 days (for each semester)
+                    // 1) Check holidays and skip them by adding 14 days (for each semester)
                     //
 
                     if (semester == 0)
@@ -139,7 +142,7 @@ namespace CalendarScheduler
                         if (cal.GetWeekOfYear(currDate, dfi.CalendarWeekRule, dfi.FirstDayOfWeek) == 45 || currDate == new DateTime(2015, 11, 11))
                         {
                             // skip autumn holidays and wapenstilstand
-                            currDate = currDate.AddDays(7);
+                            currDate = currDate.AddDays(14);
                             continue;
                         }
                     } else if (semester == 1)
@@ -158,7 +161,7 @@ namespace CalendarScheduler
                             )
                         {
                             // skip holidays and free days
-                            currDate = currDate.AddDays(7);
+                            currDate = currDate.AddDays(14);
                             continue;
                         }
                     } else
@@ -182,23 +185,36 @@ namespace CalendarScheduler
                     Event createdEvent = request.Execute();
                     Console.WriteLine("Event created: {0} ({1})", createdEvent.Summary, createdEvent.Start.Date);
 
-                    currDate = currDate.AddDays(7);
+                    currDate = currDate.AddDays(14);
                     counter++;
 
                 }
 
                 i++;
             }
+
+            //
+            // END of PushCoursesToGoogleCalendar method
+            //
         }
 
         // string array to course objects [FINISHED]
-        private void ArrayToCourse(string[] arr, string day)
+        private void ArrayToCourse(string[] arr, string day, bool oddWeek)
         {
-            if (arr[1] != "")
+            int pointer = 0;
+
+            if (!oddWeek)
             {
-                // timeArr[0] = startTime
-                // timeArr[1] = endTime
-                string[] timeArr = arr[1].Split('-');
+                // look for right pointer!
+                pointer = 0;
+            } 
+
+
+            if (arr[pointer + 1] != "")
+            {
+                // timeArr[pointer] = startTime
+                // timeArr[pointer + 1] = endTime
+                string[] timeArr = arr[pointer + 1].Split('-');
 
                 // get start and end time
                 string startTime = timeArr[0];
@@ -216,13 +232,13 @@ namespace CalendarScheduler
                 TimeSpan startTimeSpan = new TimeSpan(hourStartTime, minuteStartTime, 0);
                 TimeSpan endTimeSpan = new TimeSpan(hourEndTime, minuteEndTime, 0);
 
-                string courseName = arr[2];
-                string prof = arr[3];
+                string courseName = arr[pointer + 2];
+                string prof = arr[pointer + 3];
                 string classRoom = null;
                 string classGroup = null;
 
-                if (arr[4] != "") classGroup = arr[4];
-                if (arr[5] != "") classRoom = arr[5];
+                if (arr[pointer + 4] != "") classGroup = arr[pointer + 4];
+                if (arr[pointer + 5] != "") classRoom = arr[pointer + 5];
 
                 Course c;
 
